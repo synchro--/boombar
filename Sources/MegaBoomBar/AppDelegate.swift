@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var statusItem: NSStatusItem?
     private let menu = NSMenu()
+    private var batteryTimer: Timer?
 
     private let statusLine = NSMenuItem(title: "Checking\u{2026}", action: nil, keyEquivalent: "")
     private let toggleItem = NSMenuItem(title: "Turn On", action: nil, keyEquivalent: "")
@@ -25,6 +26,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         updateUI()
         controller.refresh()
+        controller.readBattery()
+        batteryTimer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
+            self?.controller.readBattery()
+        }
     }
 
     private func buildStatusItem() {
@@ -96,7 +101,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if controller.isConnected {
             controller.turnOff()
         } else {
-            controller.turnOn()
+            controller.turnOn { [weak self] result in
+                if case .success = result {
+                    self?.controller.readBattery()
+                }
+            }
         }
     }
 
