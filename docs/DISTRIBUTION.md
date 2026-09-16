@@ -33,6 +33,11 @@ accepts the same flags:
 scripts/build-app.sh release --universal
 ```
 
+> Note: multi-architecture SwiftPM builds are routed through `xcbuild`, so a
+> full Xcode installation (`xcode-select -s /Applications/Xcode.app`) is
+> required. With only the Command Line Tools installed, build the host
+> architecture (`swift build -c release`) instead.
+
 The script:
 
 1. builds the requested configuration (optionally universal),
