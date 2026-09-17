@@ -22,9 +22,10 @@ reference at `../ue-megaboom` (do not modify that repo from here).
 - [x] **Phase A — renamed to BoomBar/`boombar`; build verified.**
 - [x] **Phase B — protocol generalized (BLE off, model info, cached-id BLE).**
 - [x] **Phase C — icon, single version source, MIT license, install docs.**
-- [ ] **Phases D–F below (in progress — start at Phase D).**
+- [x] **Phase D — release script produces DMG + ZIP (verified locally).**
+- [ ] **Phases E–F below (in progress — start at Phase E).**
 
-Last updated: see git log. Next action: **Phase D — release script (DMG/ZIP).**
+Last updated: see git log. Next action: **Phase E — GitHub repo + CI.**
 
 ## Roadmap
 
@@ -56,10 +57,12 @@ few seconds' lag — hence the wait/verify + RFCOMM fallback).
       reads `CFBundleShortVersionString`
 - [x] `LICENSE` (MIT) and README **Install** section
 
-### Phase D — Release tooling
-- [ ] `scripts/release.sh <version> [--universal]`: build → assemble → sign
-      (ad-hoc default / Developer ID via `CODESIGN_IDENTITY`) → DMG (`hdiutil`
-      + `/Applications` symlink) → ZIP → SHA-256 → optional `gh release create`
+### Phase D — Release tooling DONE
+- [x] `scripts/release.sh <version> [--universal] [--publish]`: build → assemble
+      → sign (ad-hoc default / Developer ID via `CODESIGN_IDENTITY`) → DMG
+      (`hdiutil` + `/Applications` symlink) → ZIP → SHA-256 → optional
+      `gh release create`
+- [x] Verified locally: `dist/BoomBar-1.0.0.dmg` mounts with the app + symlink
 
 ### Phase E — GitHub + universal CI
 - [ ] `gh repo create synchro--/boombar --public` and push

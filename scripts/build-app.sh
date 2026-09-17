@@ -52,7 +52,7 @@ if [[ -f "$ROOT/Resources/AppIcon.icns" ]]; then
   cp "$ROOT/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 fi
 
-VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
+VERSION="${VERSION:-$(tr -d '[:space:]' < "$ROOT/VERSION")}"
 BUILD_NUMBER="$(git -C "$ROOT" rev-list --count HEAD 2>/dev/null || echo 1)"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" \
   -c "Set :CFBundleVersion $BUILD_NUMBER" "$APP/Contents/Info.plist"
