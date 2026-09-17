@@ -5,3 +5,4 @@ dist/
 *.dSYM
 .swiftpm/
 Package.resolved
+Resources/AppIcon.iconset/
