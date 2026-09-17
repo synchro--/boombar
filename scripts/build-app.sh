@@ -28,11 +28,12 @@ ARCH_LABEL=""
 echo "==> Building ($CONFIG$ARCH_LABEL)"
 if [[ "$UNIVERSAL" == "1" ]]; then
   swift build -c "$CONFIG" --package-path "$ROOT" --arch arm64 --arch x86_64
+  BIN_DIR="$(swift build -c "$CONFIG" --package-path "$ROOT" --arch arm64 --arch x86_64 --show-bin-path)"
 else
   swift build -c "$CONFIG" --package-path "$ROOT"
+  BIN_DIR="$(swift build -c "$CONFIG" --package-path "$ROOT" --show-bin-path)"
 fi
 
-BIN_DIR="$(swift build -c "$CONFIG" --package-path "$ROOT" --show-bin-path)"
 BIN="$BIN_DIR/$APP_NAME"
 
 if [[ ! -x "$BIN" ]]; then
