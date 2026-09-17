@@ -9,6 +9,11 @@ on iOS and Android. This is a small macOS client that speaks the same
 reverse-engineered Bluetooth protocol. It targets the whole BOOM family — BOOM,
 MEGABOOM, HYPERBOOM, EPICBOOM and EVERBOOM.
 
+> **Install:** [`install.sh`](#option-a--installer-script-no-warning) ·
+> [Homebrew](#option-b--homebrew) (`brew tap synchro--/boombar`) ·
+> [DMG](#option-c--dmg-manual). The build is ad-hoc signed and not notarized, so
+> see the install section for the one-time Gatekeeper step.
+
 ## How it works
 
 The speaker exposes a BLE control characteristic for both directions, with a
