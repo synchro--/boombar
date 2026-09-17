@@ -23,9 +23,10 @@ reference at `../ue-megaboom` (do not modify that repo from here).
 - [x] **Phase B — protocol generalized (BLE off, model info, cached-id BLE).**
 - [x] **Phase C — icon, single version source, MIT license, install docs.**
 - [x] **Phase D — release script produces DMG + ZIP (verified locally).**
-- [ ] **Phases E–F below (in progress — start at Phase E).**
+- [x] **Phase E — public repo + CI/release workflows.**
+- [ ] **Phase F — tag v1.0.0, verify universal DMG, publish release.**
 
-Last updated: see git log. Next action: **Phase E — GitHub repo + CI.**
+Last updated: see git log. Next action: **Phase F — release v1.0.0 and verify.**
 
 ## Roadmap
 
@@ -64,11 +65,12 @@ few seconds' lag — hence the wait/verify + RFCOMM fallback).
       `gh release create`
 - [x] Verified locally: `dist/BoomBar-1.0.0.dmg` mounts with the app + symlink
 
-### Phase E — GitHub + universal CI
-- [ ] `gh repo create synchro--/boombar --public` and push
-- [ ] `.github/workflows/release.yml` on tag `v*`, runner `macos-14`:
-      universal `arm64+x86_64` build → ad-hoc sign → DMG + ZIP → attach to Release
-      (no secrets needed for the free/ad-hoc path)
+### Phase E — GitHub + universal CI DONE
+- [x] Repo created and pushed: https://github.com/synchro--/boombar (public)
+- [x] `.github/workflows/release.yml` on tag `v*` / manual dispatch: runner
+      `macos-14`, universal `arm64+x86_64` build → ad-hoc sign → DMG + ZIP →
+      GitHub Release
+- [x] `.github/workflows/ci.yml` builds on main and PRs
 
 ### Phase F — Verify & publish
 - [ ] Local: ON, OFF (BLE first, RFCOMM fallback), battery, reconnect on MEGABOOM 3
