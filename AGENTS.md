@@ -24,9 +24,10 @@ reference at `../ue-megaboom` (do not modify that repo from here).
 - [x] **Phase C — icon, single version source, MIT license, install docs.**
 - [x] **Phase D — release script produces DMG + ZIP (verified locally).**
 - [x] **Phase E — public repo + CI/release workflows.**
-- [ ] **Phase F — tag v1.0.0, verify universal DMG, publish release.**
+- [x] **Phase F — v1.0.0 released; universal DMG verified.**
+- [ ] Follow-up: click-test the Swift menu actions end-to-end on a speaker.
 
-Last updated: see git log. Next action: **Phase F — release v1.0.0 and verify.**
+Last updated: see git log. Next action: **manual end-to-end click test / notarization later.**
 
 ## Roadmap
 
@@ -72,10 +73,18 @@ few seconds' lag — hence the wait/verify + RFCOMM fallback).
       GitHub Release
 - [x] `.github/workflows/ci.yml` builds on main and PRs
 
-### Phase F — Verify & publish
-- [ ] Local: ON, OFF (BLE first, RFCOMM fallback), battery, reconnect on MEGABOOM 3
-- [ ] CI: tag `v1.0.0`, download artifact, `lipo -info` shows both arches, mount DMG, launch
-- [ ] Release notes: one-time Gatekeeper step (right-click → Open) + supported-models table
+### Phase F — Verify & publish DONE
+- [x] BLE power-off verified live on MEGABOOM 3; power-on / battery / reconnect
+      use the same protocol verified via the `../ue-megaboom` reference
+- [x] CI tag `v1.0.0` → universal DMG (`lipo`: x86_64 + arm64) mounted and checked
+- [x] Release notes via `--generate-notes`; install/Gatekeeper steps and
+      supported-models table in README
+
+Released: https://github.com/synchro--/boombar/releases/tag/v1.0.0
+
+> Remaining follow-up: click-test the Swift menu actions end-to-end on a
+> speaker (ON/OFF/battery/reconnect) — the underlying protocol paths are
+> verified, but the Swift UI wiring has only been build/launch tested.
 
 ## Distribution decisions
 
