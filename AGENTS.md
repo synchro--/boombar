@@ -95,6 +95,14 @@ Released: https://github.com/synchro--/boombar/releases/tag/v1.0.0
   without full Xcode, so `--arch x86_64` fails locally.
 - Mac App Store is not planned (sandbox blocks classic RFCOMM; the BLE-only OFF
   path may change this later).
+- Homebrew: separate tap repo `synchro--/homebrew-boombar`
+  (`brew tap synchro--/boombar && brew trust synchro--/boombar &&
+  brew install --cask boombar`). Deliberately **no** quarantine-stripping
+  postflight — the cask documents the manual Open Anyway step. Bump
+  `version`/`sha256` in `Casks/boombar.rb` every release.
+- Install paths: `install.sh` (curl, no quarantine → warning-free), cask
+  (quarantine → manual step), or DMG (manual step). All ad-hoc signed until a
+  Developer ID exists.
 
 ## Protocol facts (reverse-engineered, verified on MEGABOOM 3)
 

@@ -59,7 +59,18 @@ without a Gatekeeper prompt:
 curl -fsSL https://raw.githubusercontent.com/synchro--/boombar/main/install.sh | bash
 ```
 
-### Option B — DMG (manual)
+### Option B — Homebrew
+
+```bash
+brew tap synchro--/boombar
+brew trust synchro--/boombar   # required for third-party taps
+brew install --cask boombar
+```
+
+Homebrew quarantines the download, so the first launch is still blocked — use
+the same **Open Anyway** / `xattr` step below.
+
+### Option C — DMG (manual)
 
 1. Download the latest `BoomBar-<version>.dmg` from
    [Releases](https://github.com/synchro--/boombar/releases/latest).

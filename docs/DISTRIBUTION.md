@@ -172,35 +172,30 @@ only way to remove the warning for all download paths.
 
 ## 6. Homebrew Cask
 
-Once DMGs are hosted at stable URLs, a cask is straightforward:
+Homebrew Cask is shipped via a self-hosted tap:
+<https://github.com/synchro--/homebrew-boombar> (`Casks/boombar.rb`).
 
-```ruby
-cask "boombar" do
-  version "1.0.0"
-  sha256 "PUT_SHA256_OF_DMG"
-
-  url "https://github.com/synchro--/boombar/releases/download/v#{version}/BoomBar-#{version}.dmg",
-      verified: "github.com/synchro--/boombar/"
-  name "BoomBar"
-  desc "Menu-bar control for Ultimate Ears BOOM / MEGABOOM speakers"
-  homepage "https://github.com/synchro--/boombar"
-
-  depends_on macos: ">= :ventura"
-
-  app "BoomBar.app"
-
-  zap trash: [
-    "~/Library/Preferences/com.synchro.boombar.plist",
-  ]
-
-  caveats <<~EOS
-    BoomBar controls Bluetooth speakers. Grant it Bluetooth access in
-    System Settings > Privacy & Security > Bluetooth on first launch.
-  EOS
-end
+```bash
+brew tap synchro--/boombar
+brew trust synchro--/boombar   # Homebrew 7 refuses casks from untrusted taps
+brew install --cask boombar
 ```
 
-Submit to the `homebrew/cask` tap (or host your own tap) via PR.
+Two current constraints:
+
+- **The official `homebrew/cask` tap is not an option.** It requires artefacts
+  to pass Gatekeeper checks (signed + notarized) and Homebrew is dropping casks
+  that fail those checks. The ad-hoc build is therefore ineligible.
+- **The cask still leaves the app quarantined** (Homebrew quarantines downloads;
+  the `--no-quarantine` flag has been removed). So the cask provides
+  `brew upgrade` management but does **not** remove the one-time Gatekeeper
+  step — the cask `caveats` point users at Open Anyway / `xattr` and at
+  `install.sh` for a warning-free install. Avoid a quarantine-stripping
+  `postflight`: it silently bypasses Gatekeeper and is discouraged.
+
+The `version`/`sha256` in the cask must be bumped each release (the DMG is
+version-pinned). `brew audit --cask --online boombar` and `brew style` should
+pass before updating the tap.
 
 ## 7. Auto-update with Sparkle
 
