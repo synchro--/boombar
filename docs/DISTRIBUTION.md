@@ -146,15 +146,29 @@ codesign --force --timestamp --sign "$IDENTITY" dist/BoomBar-1.0.0.dmg
 
 ### No-Apple-account fallback
 
-Ship the zipped **ad-hoc** `.app` and document that recipients must remove the
-quarantine flag, since Gatekeeper blocks unsigned downloads:
+Ad-hoc signed builds are uploaded by `scripts/release.sh` under both versioned
+and stable names (`BoomBar-<version>.dmg` and `BoomBar.dmg`), so
+`.../releases/latest/download/BoomBar.dmg` always resolves.
+
+Because the build is not notarized, Gatekeeper blocks it **when the download
+carries the quarantine attribute** (browser downloads do):
 
 ```bash
 xattr -dr com.apple.quarantine /Applications/BoomBar.app
 ```
 
-Alternatively users can right-click the app and choose **Open** once. This is a
-poor experience; signing + notarization is strongly preferred.
+On macOS 15 and later the old Control-click → **Open** shortcut no longer
+applies; users must use **System Settings → Privacy & Security → Open Anyway**.
+
+To avoid the prompt entirely, install with `install.sh`, which fetches the DMG
+with `curl` (no quarantine attribute) and clears the flag explicitly:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/synchro--/boombar/main/install.sh | bash
+```
+
+This is a workaround, not a fix — signing + notarization (sections 3–4) is the
+only way to remove the warning for all download paths.
 
 ## 6. Homebrew Cask
 

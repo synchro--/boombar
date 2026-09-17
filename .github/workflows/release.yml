@@ -42,12 +42,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version.outputs.value }}
         run: |
+          assets=(
+            "dist/BoomBar-$VERSION.dmg" "dist/BoomBar-$VERSION.zip"
+            "dist/BoomBar.dmg" "dist/BoomBar.zip"
+          )
           if gh release view "v$VERSION" >/dev/null 2>&1; then
-            gh release upload "v$VERSION" \
-              "dist/BoomBar-$VERSION.dmg" "dist/BoomBar-$VERSION.zip" --clobber
+            gh release upload "v$VERSION" "${assets[@]}" --clobber
           else
-            gh release create "v$VERSION" \
-              "dist/BoomBar-$VERSION.dmg" "dist/BoomBar-$VERSION.zip" \
+            gh release create "v$VERSION" "${assets[@]}" \
               --title "Boom Bar $VERSION" --generate-notes
           fi
 

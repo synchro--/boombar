@@ -66,15 +66,21 @@ echo "==> Creating ZIP"
 rm -f "$ZIP"
 ditto -c -k --keepParent "$APP" "$ZIP"
 
+# Stable-named copies so .../releases/latest/download/BoomBar.dmg always works.
+STABLE_DMG="$DIST/$APP_NAME.dmg"
+STABLE_ZIP="$DIST/$APP_NAME.zip"
+cp -f "$DMG" "$STABLE_DMG"
+cp -f "$ZIP" "$STABLE_ZIP"
+
 echo "==> Checksums (sha256)"
 shasum -a 256 "$DMG" "$ZIP"
 
 if [[ "$PUBLISH" == "1" ]]; then
   echo "==> Publishing GitHub release v$VERSION"
   if gh release view "v$VERSION" >/dev/null 2>&1; then
-    gh release upload "v$VERSION" "$DMG" "$ZIP" --clobber
+    gh release upload "v$VERSION" "$DMG" "$ZIP" "$STABLE_DMG" "$STABLE_ZIP" --clobber
   else
-    gh release create "v$VERSION" "$DMG" "$ZIP" \
+    gh release create "v$VERSION" "$DMG" "$ZIP" "$STABLE_DMG" "$STABLE_ZIP" \
       --title "Boom Bar $VERSION" --generate-notes
   fi
 fi

@@ -47,20 +47,41 @@ works.
 
 ## Install
 
+The app is ad-hoc signed (no paid Apple Developer account), so it is **not
+notarized** and macOS Gatekeeper will warn about it. Pick one of:
+
+### Option A — installer script (no warning)
+
+`curl` downloads do not receive the macOS quarantine flag, so the app launches
+without a Gatekeeper prompt:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/synchro--/boombar/main/install.sh | bash
+```
+
+### Option B — DMG (manual)
+
 1. Download the latest `BoomBar-<version>.dmg` from
    [Releases](https://github.com/synchro--/boombar/releases/latest).
 2. Open the DMG and drag **Boom Bar** into **Applications**.
-3. The build is ad-hoc signed (no paid Apple Developer account), so the first
-   launch is blocked by Gatekeeper: **right-click the app → Open**, then confirm.
-   Alternatively, in Terminal:
+3. Because it wasn't notarized, the first launch is blocked. On **macOS 15 and
+   later, Control-click → Open no longer works**. Instead:
+   - Open **System Settings → Privacy & Security**, scroll to the message about
+     **Boom Bar**, click **Open Anyway**, then open the app and confirm; **or**
+   - clear the quarantine flag in Terminal:
 
-   ```bash
-   xattr -dr com.apple.quarantine "/Applications/Boom Bar.app"
-   ```
+     ```bash
+     xattr -dr com.apple.quarantine "/Applications/BoomBar.app"
+     ```
 
-4. Grant Bluetooth when macOS asks (System Settings → Privacy & Security →
-   Bluetooth). The app is menu-bar only; look for the speaker icon in the menu
-   bar, not in the Dock.
+Either way, grant Bluetooth when macOS asks (System Settings → Privacy &
+Security → Bluetooth). The app is menu-bar only; look for the speaker icon in
+the menu bar, not in the Dock.
+
+> Notarization would remove this step entirely. It requires a paid Apple
+> Developer Program membership; the signing/notarization pipeline is documented
+> in [docs/DISTRIBUTION.md](docs/DISTRIBUTION.md) and can be enabled later by
+> setting `CODESIGN_IDENTITY` plus `notarytool` credentials.
 
 ## Requirements
 
