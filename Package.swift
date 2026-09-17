@@ -2,14 +2,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "MegaBoomBar",
+    name: "BoomBar",
     platforms: [
         .macOS(.v13)
     ],
     targets: [
         .executableTarget(
-            name: "MegaBoomBar",
-            path: "Sources/MegaBoomBar",
+            name: "BoomBar",
+            path: "Sources/BoomBar",
             linkerSettings: [
                 .linkedFramework("AppKit"),
                 .linkedFramework("CoreBluetooth"),

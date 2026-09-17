@@ -1,6 +1,6 @@
-# Distributing MegaBoomBar
+# Distributing BoomBar
 
-MegaBoomBar is a menu-bar-only (`LSUIElement`) macOS app with no sandbox
+BoomBar is a menu-bar-only (`LSUIElement`) macOS app with no sandbox
 requirement today. This document covers building, signing, notarizing, and
 packaging it for distribution, from local development through Homebrew.
 
@@ -11,7 +11,7 @@ packaging it for distribution, from local development through Homebrew.
 ```bash
 swift build                 # debug
 swift run                   # run the menu-bar app from source
-scripts/build-app.sh debug  # assemble dist/MegaBoomBar.app (ad-hoc signed)
+scripts/build-app.sh debug  # assemble dist/BoomBar.app (ad-hoc signed)
 ```
 
 `swift run` produces a bare Mach-O executable, not a bundle. macOS attributes
@@ -26,7 +26,7 @@ swift build -c release --arch arm64 --arch x86_64
 ```
 
 SwiftPM emits a universal binary at
-`$(swift build -c release --show-bin-path)/MegaBoomBar`. The helper script
+`$(swift build -c release --show-bin-path)/BoomBar`. The helper script
 accepts the same flags:
 
 ```bash
@@ -41,10 +41,10 @@ scripts/build-app.sh release --universal
 The script:
 
 1. builds the requested configuration (optionally universal),
-2. creates `dist/MegaBoomBar.app/Contents/{MacOS,Resources}`,
+2. creates `dist/BoomBar.app/Contents/{MacOS,Resources}`,
 3. copies the binary and `Resources/Info.plist`,
 4. validates the plist with `plutil -lint`,
-5. codesigns the bundle with `Resources/MegaBoomBar.entitlements`.
+5. codesigns the bundle with `Resources/BoomBar.entitlements`.
 
 ## 3. Code signing
 
@@ -55,11 +55,11 @@ For distribution, use a **Developer ID Application** certificate and the
 hardened runtime:
 
 ```bash
-BUNDLE=dist/MegaBoomBar.app
+BUNDLE=dist/BoomBar.app
 IDENTITY="Developer ID Application: Your Name (TEAMID)"
 
 codesign --force --options runtime --timestamp \
-  --entitlements Resources/MegaBoomBar.entitlements \
+  --entitlements Resources/BoomBar.entitlements \
   --sign "$IDENTITY" "$BUNDLE"
 
 codesign --verify --deep --strict --verbose=2 "$BUNDLE"
@@ -73,7 +73,7 @@ CODESIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
   scripts/build-app.sh release --universal
 ```
 
-Entitlements (`Resources/MegaBoomBar.entitlements`):
+Entitlements (`Resources/BoomBar.entitlements`):
 
 ```xml
 <key>com.apple.security.device.bluetooth</key>
@@ -93,7 +93,7 @@ Notarization requires a Developer ID signature and an Apple credential.
 
 ```bash
 # Store credentials once (app-specific password recommended)
-xcrun notarytool store-credentials "MegaBoomBar-notary" \
+xcrun notarytool store-credentials "BoomBar-notary" \
   --apple-id "you@example.com" \
   --team-id "TEAMID" \
   --password "app-specific-password"
@@ -101,14 +101,14 @@ xcrun notarytool store-credentials "MegaBoomBar-notary" \
 # Or use an App Store Connect API key: --key AuthKey_XXX.p8 --key-id XXX --issuer UUID
 
 # Zip the app (notarytool wants an archive) and submit
-ditto -c -k --keepParent dist/MegaBoomBar.app dist/MegaBoomBar.zip
-xcrun notarytool submit dist/MegaBoomBar.zip \
-  --keychain-profile "MegaBoomBar-notary" --wait
+ditto -c -k --keepParent dist/BoomBar.app dist/BoomBar.zip
+xcrun notarytool submit dist/BoomBar.zip \
+  --keychain-profile "BoomBar-notary" --wait
 
 # Staple the ticket and verify
-xcrun stapler staple dist/MegaBoomBar.app
-xcrun stapler validate dist/MegaBoomBar.app
-spctl -a -vv --type execute dist/MegaBoomBar.app
+xcrun stapler staple dist/BoomBar.app
+xcrun stapler validate dist/BoomBar.app
+spctl -a -vv --type execute dist/BoomBar.app
 ```
 
 After stapling, re-zip or package the stapled `.app` for upload so the ticket
@@ -119,7 +119,7 @@ travels with the download.
 **Zip** (simplest):
 
 ```bash
-ditto -c -k --keepParent dist/MegaBoomBar.app dist/MegaBoomBar-1.0.0.zip
+ditto -c -k --keepParent dist/BoomBar.app dist/BoomBar-1.0.0.zip
 ```
 
 **DMG** (nicer UX). Either `create-dmg`:
@@ -127,21 +127,21 @@ ditto -c -k --keepParent dist/MegaBoomBar.app dist/MegaBoomBar-1.0.0.zip
 ```bash
 brew install create-dmg
 create-dmg \
-  --volname "MegaBoomBar" \
+  --volname "BoomBar" \
   --app-drop-link 600 185 \
-  --icon "MegaBoomBar.app" 180 185 \
-  dist/MegaBoomBar-1.0.0.dmg dist/MegaBoomBar.app
+  --icon "BoomBar.app" 180 185 \
+  dist/BoomBar-1.0.0.dmg dist/BoomBar.app
 ```
 
 or plain `hdiutil`:
 
 ```bash
 mkdir -p dist/dmg-root
-cp -R dist/MegaBoomBar.app dist/dmg-root/
+cp -R dist/BoomBar.app dist/dmg-root/
 ln -s /Applications dist/dmg-root/Applications
-hdiutil create -volname MegaBoomBar -srcfolder dist/dmg-root \
-  -ov -format UDZO dist/MegaBoomBar-1.0.0.dmg
-codesign --force --timestamp --sign "$IDENTITY" dist/MegaBoomBar-1.0.0.dmg
+hdiutil create -volname BoomBar -srcfolder dist/dmg-root \
+  -ov -format UDZO dist/BoomBar-1.0.0.dmg
+codesign --force --timestamp --sign "$IDENTITY" dist/BoomBar-1.0.0.dmg
 ```
 
 ### No-Apple-account fallback
@@ -150,7 +150,7 @@ Ship the zipped **ad-hoc** `.app` and document that recipients must remove the
 quarantine flag, since Gatekeeper blocks unsigned downloads:
 
 ```bash
-xattr -dr com.apple.quarantine /Applications/MegaBoomBar.app
+xattr -dr com.apple.quarantine /Applications/BoomBar.app
 ```
 
 Alternatively users can right-click the app and choose **Open** once. This is a
@@ -161,26 +161,26 @@ poor experience; signing + notarization is strongly preferred.
 Once DMGs are hosted at stable URLs, a cask is straightforward:
 
 ```ruby
-cask "megaboombar" do
+cask "boombar" do
   version "1.0.0"
   sha256 "PUT_SHA256_OF_DMG"
 
-  url "https://github.com/yourname/MegaBoomBar/releases/download/v#{version}/MegaBoomBar-#{version}.dmg",
-      verified: "github.com/yourname/MegaBoomBar/"
-  name "MegaBoomBar"
+  url "https://github.com/synchro--/boombar/releases/download/v#{version}/BoomBar-#{version}.dmg",
+      verified: "github.com/synchro--/boombar/"
+  name "BoomBar"
   desc "Menu-bar control for Ultimate Ears BOOM / MEGABOOM speakers"
-  homepage "https://github.com/yourname/MegaBoomBar"
+  homepage "https://github.com/synchro--/boombar"
 
   depends_on macos: ">= :ventura"
 
-  app "MegaBoomBar.app"
+  app "BoomBar.app"
 
   zap trash: [
-    "~/Library/Preferences/com.megaboombar.app.plist",
+    "~/Library/Preferences/com.synchro.boombar.plist",
   ]
 
   caveats <<~EOS
-    MegaBoomBar controls Bluetooth speakers. Grant it Bluetooth access in
+    BoomBar controls Bluetooth speakers. Grant it Bluetooth access in
     System Settings > Privacy & Security > Bluetooth on first launch.
   EOS
 end
@@ -264,11 +264,11 @@ jobs:
           VERSION: ${{ github.ref_name }}
         run: |
           scripts/build-app.sh release --universal
-          ditto -c -k --keepParent dist/MegaBoomBar.app dist/MegaBoomBar.zip
-          xcrun notarytool submit dist/MegaBoomBar.zip --keychain-profile ci-notary --wait
-          xcrun stapler staple dist/MegaBoomBar.app
-          spctl -a -vv --type execute dist/MegaBoomBar.app
-          ditto -c -k --keepParent dist/MegaBoomBar.app "dist/MegaBoomBar-${VERSION}.zip"
+          ditto -c -k --keepParent dist/BoomBar.app dist/BoomBar.zip
+          xcrun notarytool submit dist/BoomBar.zip --keychain-profile ci-notary --wait
+          xcrun stapler staple dist/BoomBar.app
+          spctl -a -vv --type execute dist/BoomBar.app
+          ditto -c -k --keepParent dist/BoomBar.app "dist/BoomBar-${VERSION}.zip"
           # create DMG here (create-dmg/hdiutil), then sign it
 
       - uses: softprops/action-gh-release@v2

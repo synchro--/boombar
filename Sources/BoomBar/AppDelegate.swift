@@ -35,7 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func buildStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         item.button?.image = icon(connected: false)
-        item.button?.toolTip = "MegaBoomBar"
+        item.button?.toolTip = "BoomBar"
         item.menu = menu
         statusItem = item
     }
@@ -62,7 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(outputItem)
 
         menu.addItem(.separator())
-        let versionItem = NSMenuItem(title: "MegaBoomBar \(Self.version)", action: nil, keyEquivalent: "")
+        let versionItem = NSMenuItem(title: "BoomBar \(Self.version)", action: nil, keyEquivalent: "")
         versionItem.isEnabled = false
         menu.addItem(versionItem)
 
@@ -92,7 +92,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func icon(connected: Bool) -> NSImage? {
         let symbol = connected ? "hifispeaker.fill" : "hifispeaker"
-        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "MegaBoomBar")
+        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "BoomBar")
         image?.isTemplate = true
         return image
     }

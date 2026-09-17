@@ -71,7 +71,7 @@ final class BLEReceiver: NSObject {
     static let batteryCharacteristicUUID = CBUUID(string: "00002A19-0000-1000-8000-00805F9B34FB")
     private static let logitechManufacturerID: UInt16 = 224
 
-    private let bleQueue = DispatchQueue(label: "com.megaboombar.ble")
+    private let bleQueue = DispatchQueue(label: "com.synchro.boombar.ble")
     private let lock = NSLock()
 
     private var central: CBCentralManager?

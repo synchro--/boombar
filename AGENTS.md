@@ -10,7 +10,7 @@ reference at `../ue-megaboom` (do not modify that repo from here).
 |---|---|
 | Display name (`CFBundleDisplayName`) | `Boom Bar` (with space) |
 | Product / target / executable / `CFBundleName` | `BoomBar` (no space) |
-| Repo / directory | `boombar` (currently `megaboom-bar` until Phase A) |
+| Repo / directory | `boombar` |
 | Bundle identifier | `com.synchro.boombar` |
 | License | MIT |
 | GitHub | `synchro--/boombar` (public) |
@@ -19,19 +19,20 @@ reference at `../ue-megaboom` (do not modify that repo from here).
 
 - [x] Basic native app implemented and building (`swift build`, `swift run`).
 - [x] BLE power ON, RFCOMM power OFF, battery read, audio reconnect, menu-bar UI.
-- [ ] **Phases A–F below (in progress — start at Phase A).**
+- [x] **Phase A — renamed to BoomBar/`boombar`; build verified.**
+- [ ] **Phases B–F below (in progress — start at Phase B).**
 
-Last updated: see git log. Next action: **Phase A — rename/restructure.**
+Last updated: see git log. Next action: **Phase B — protocol generalization.**
 
 ## Roadmap
 
-### Phase A — Rename & restructure (preserve git history)
-- [ ] `git mv /Users/rain/hub/megaboom-bar /Users/rain/hub/boombar`
-- [ ] Rename Swift target/product/module `MegaBoomBar` → `BoomBar` (`Package.swift`, `Sources/BoomBar/`)
-- [ ] `Resources/Info.plist`: `CFBundleDisplayName="Boom Bar"`,
+### Phase A — Rename & restructure (preserve git history) DONE
+- [x] Moved to `/Users/rain/hub/boombar`
+- [x] Renamed Swift target/product/module `MegaBoomBar` -> `BoomBar` (`Package.swift`, `Sources/BoomBar/`)
+- [x] `Resources/Info.plist`: `CFBundleDisplayName="Boom Bar"`,
       `CFBundleName/CFBundleExecutable="BoomBar"`, `CFBundleIdentifier="com.synchro.boombar"`
-- [ ] Update `scripts/build-app.sh`, entitlements filename, `docs/DISTRIBUTION.md`, `README.md`
-- [ ] UserDefaults prefix `MegaBoomBar.` → `BoomBar.`
+- [x] Updated `scripts/build-app.sh`, entitlements filename, `docs/DISTRIBUTION.md`, `README.md`
+- [x] UserDefaults prefix and dispatch-queue labels updated
 
 ### Phase B — Protocol generalization (all BOOM-family models)
 - [ ] Model-profile table: name hints, advert service UUIDs (`FE61`, `FE9F`),

@@ -11,7 +11,7 @@ final class Config {
     }
 
     private let defaults: UserDefaults
-    private let prefix = "MegaBoomBar."
+    private let prefix = "BoomBar."
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults

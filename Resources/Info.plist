@@ -5,15 +5,15 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>MegaBoomBar</string>
+	<string>Boom Bar</string>
 	<key>CFBundleExecutable</key>
-	<string>MegaBoomBar</string>
+	<string>BoomBar</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.megaboombar.app</string>
+	<string>com.synchro.boombar</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>MegaBoomBar</string>
+	<string>BoomBar</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -25,9 +25,9 @@
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>MegaBoomBar uses Bluetooth to turn your Ultimate Ears speaker on and off and to read its battery level.</string>
+	<string>Boom Bar uses Bluetooth to turn your Ultimate Ears speaker on and off and to read its battery level.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>MegaBoomBar uses Bluetooth to control your Ultimate Ears speaker.</string>
+	<string>Boom Bar uses Bluetooth to control your Ultimate Ears speaker.</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSPrincipalClass</key>

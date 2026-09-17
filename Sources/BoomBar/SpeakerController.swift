@@ -23,7 +23,7 @@ enum SpeakerError: LocalizedError {
 final class SpeakerController {
     private let config: Config
     private let ble = BLEReceiver()
-    private let workQueue = DispatchQueue(label: "com.megaboombar.speaker")
+    private let workQueue = DispatchQueue(label: "com.synchro.boombar.speaker")
 
     private(set) var isConnected = false
     private(set) var isBusy = false

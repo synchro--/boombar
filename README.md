@@ -1,4 +1,4 @@
-# MegaBoomBar
+# BoomBar
 
 Turn Ultimate Ears BOOM / MEGABOOM speakers on and off from the macOS menu bar,
 and read their battery level. A native Swift port of
@@ -46,12 +46,12 @@ swift build -c release --arch arm64 --arch x86_64
 
 # assemble a double-clickable, ad-hoc codesigned .app
 scripts/build-app.sh release
-open dist/MegaBoomBar.app
+open dist/BoomBar.app
 ```
 
 When run with `swift run` there is no app bundle, so macOS attributes the
 Bluetooth permission to the launching terminal. Launch the built
-`dist/MegaBoomBar.app` to get a proper app identity and permission prompt.
+`dist/BoomBar.app` to get a proper app identity and permission prompt.
 
 The first time the app needs Bluetooth it will ask for permission. If you deny
 it, re-enable it in System Settings → Privacy & Security → Bluetooth.
@@ -70,8 +70,8 @@ runs off the main thread.
 
 ## Configuration
 
-Settings are stored in `UserDefaults` (bundle id `com.megaboombar.app`) under
-the `MegaBoomBar.` prefix:
+Settings are stored in `UserDefaults` (bundle id `com.synchro.boombar`) under
+the `BoomBar.` prefix:
 
 - `hostMAC` — this Mac's Bluetooth address (auto-detected).
 - `speakerMAC` / `speakerName` — the paired speaker's classic address and name.
