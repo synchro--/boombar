@@ -45,6 +45,23 @@ doesn't work), please open a **model report** issue with the output of
 `swift run` → Scan, plus the advertised service UUIDs and whether each action
 works.
 
+## Install
+
+1. Download the latest `BoomBar-<version>.dmg` from
+   [Releases](https://github.com/synchro--/boombar/releases/latest).
+2. Open the DMG and drag **Boom Bar** into **Applications**.
+3. The build is ad-hoc signed (no paid Apple Developer account), so the first
+   launch is blocked by Gatekeeper: **right-click the app → Open**, then confirm.
+   Alternatively, in Terminal:
+
+   ```bash
+   xattr -dr com.apple.quarantine "/Applications/Boom Bar.app"
+   ```
+
+4. Grant Bluetooth when macOS asks (System Settings → Privacy & Security →
+   Bluetooth). The app is menu-bar only; look for the speaker icon in the menu
+   bar, not in the Dock.
+
 ## Requirements
 
 - macOS 13 or later (developed on macOS 26, Apple Silicon)

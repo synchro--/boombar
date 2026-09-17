@@ -1,7 +1,8 @@
 import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    static let version = "1.0.0"
+    static let version =
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
 
     private let config = Config()
     private lazy var controller = SpeakerController(config: config)

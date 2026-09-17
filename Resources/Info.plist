@@ -10,6 +10,8 @@
 	<string>BoomBar</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.synchro.boombar</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
