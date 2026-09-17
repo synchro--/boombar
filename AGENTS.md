@@ -20,9 +20,10 @@ reference at `../ue-megaboom` (do not modify that repo from here).
 - [x] Basic native app implemented and building (`swift build`, `swift run`).
 - [x] BLE power ON, RFCOMM power OFF, battery read, audio reconnect, menu-bar UI.
 - [x] **Phase A — renamed to BoomBar/`boombar`; build verified.**
-- [ ] **Phases B–F below (in progress — start at Phase B).**
+- [x] **Phase B — protocol generalized (BLE off, model info, cached-id BLE).**
+- [ ] **Phases C–F below (in progress — start at Phase C).**
 
-Last updated: see git log. Next action: **Phase B — protocol generalization.**
+Last updated: see git log. Next action: **Phase C — packaging polish.**
 
 ## Roadmap
 
@@ -34,15 +35,18 @@ Last updated: see git log. Next action: **Phase B — protocol generalization.**
 - [x] Updated `scripts/build-app.sh`, entitlements filename, `docs/DISTRIBUTION.md`, `README.md`
 - [x] UserDefaults prefix and dispatch-queue labels updated
 
-### Phase B — Protocol generalization (all BOOM-family models)
-- [ ] Model-profile table: name hints, advert service UUIDs (`FE61`, `FE9F`),
-      power characteristic UUIDs (`C6D6DC0D-…`, `69C0F621-…`)
-- [ ] **OFF over BLE primary**: write `hostMAC + 0x02` to `C6D6DC0D-…`;
-      keep classic RFCOMM `02 01 B6` (channel 1) as fallback
-- [ ] Read `2A00` (device name) + `2A24` (model number) on connect
-- [ ] Use `retrievePeripherals(withIdentifiers:)` with cached id so BLE works
-      when the speaker is on / not advertising
-- [ ] "Supported speakers" table in README + model-report issue template
+### Phase B — Protocol generalization (all BOOM-family models) DONE
+- [x] Discovery service UUIDs (`FE61`, `FE9F`), power characteristic UUIDs
+      (`C6D6DC0D-…`, `69C0F621-…`), name hints
+- [x] **OFF over BLE primary**: `hostMAC + 0x02` to `C6D6DC0D-…`; verifies the
+      classic link dropped (up to 8 s) then falls back to RFCOMM `02 01 B6`
+- [x] Read `2A00` (device name) + `2A24` (model number) on connect
+- [x] `retrievePeripherals(withIdentifiers:)` tried first with the cached id so
+      BLE works when the speaker is on / not advertising
+- [x] "Supported speakers" table in README + `.github/ISSUE_TEMPLATE/model-report.md`
+
+BLE-OFF was verified live on MEGABOOM 3 (turns off, classic link drops with a
+few seconds' lag — hence the wait/verify + RFCOMM fallback).
 
 ### Phase C — Packaging polish
 - [ ] `Resources/AppIcon.icns` (Material Symbols speaker-derived, attributed) + `CFBundleIconFile`

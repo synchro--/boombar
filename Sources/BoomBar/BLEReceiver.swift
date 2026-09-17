@@ -46,6 +46,11 @@ struct DiscoveredPeripheral {
     let isSpeaker: Bool
 }
 
+struct SpeakerInfo {
+    let deviceName: String?
+    let model: String?
+}
+
 struct WakeOutcome {
     let characteristicUUID: CBUUID?
     let payload: Data
@@ -53,12 +58,14 @@ struct WakeOutcome {
     let alreadyOn: Bool
     let peripheralIdentifier: UUID?
     let name: String?
+    let info: SpeakerInfo
 }
 
 struct BatteryOutcome {
     let level: Int?
     let peripheralIdentifier: UUID?
     let name: String?
+    let info: SpeakerInfo
 }
 
 final class BLEReceiver: NSObject {
@@ -69,6 +76,10 @@ final class BLEReceiver: NSObject {
         CBUUID(string: "69C0F621-1354-4CF8-98A6-328B8FAA1897")
     ]
     static let batteryCharacteristicUUID = CBUUID(string: "00002A19-0000-1000-8000-00805F9B34FB")
+    static let deviceNameCharacteristicUUID = CBUUID(string: "00002A00-0000-1000-8000-00805F9B34FB")
+    static let modelNumberCharacteristicUUID = CBUUID(string: "00002A24-0000-1000-8000-00805F9B34FB")
+    static let powerOnCommand: UInt8 = 0x01
+    static let powerOffCommand: UInt8 = 0x02
     private static let logitechManufacturerID: UInt16 = 224
 
     private let bleQueue = DispatchQueue(label: "com.synchro.boombar.ble")
@@ -97,7 +108,7 @@ final class BLEReceiver: NSObject {
     private var readError: Error?
     private var readData: Data?
 
-    static func buildPayloads(hostMAC: String, payloadHex: String?) -> [(label: String, data: Data)] {
+    static func buildPayloads(hostMAC: String, payloadHex: String?, command: UInt8 = powerOnCommand) -> [(label: String, data: Data)] {
         if let payloadHex {
             let cleaned = payloadHex.filter { $0.isHexDigit }
             if cleaned.count % 2 == 0, let data = Data(hexString: cleaned), !data.isEmpty {
@@ -107,7 +118,7 @@ final class BLEReceiver: NSObject {
 
         let compact = Config.compactMAC(hostMAC)
         guard compact.count == 12, var normal = Data(hexString: compact) else { return [] }
-        normal.append(0x01)
+        normal.append(command)
 
         var octets: [String] = []
         var index = compact.startIndex
@@ -118,7 +129,7 @@ final class BLEReceiver: NSObject {
         }
         let reversedCompact = octets.reversed().joined()
         var reversed = Data(hexString: reversedCompact) ?? Data()
-        reversed.append(0x01)
+        reversed.append(command)
 
         var variants: [(label: String, data: Data)] = [("normal", normal)]
         if reversed != normal {
@@ -169,6 +180,7 @@ final class BLEReceiver: NSObject {
 
                 try discoverAllCharacteristics(peripheral, timeout: 12)
                 let battery = batteryValue(on: peripheral)
+                let info = speakerInfo(on: peripheral)
 
                 guard let powerCharacteristic = characteristic(on: peripheral, matchingAny: Self.powerCharacteristicUUIDs) else {
                     return WakeOutcome(characteristicUUID: nil,
@@ -176,7 +188,8 @@ final class BLEReceiver: NSObject {
                                        battery: battery,
                                        alreadyOn: true,
                                        peripheralIdentifier: peripheral.identifier,
-                                       name: name ?? peripheral.name)
+                                       name: name ?? peripheral.name,
+                                       info: info)
                 }
 
                 for payload in payloads {
@@ -187,7 +200,48 @@ final class BLEReceiver: NSObject {
                                            battery: battery,
                                            alreadyOn: false,
                                            peripheralIdentifier: peripheral.identifier,
-                                           name: name ?? peripheral.name)
+                                           name: name ?? peripheral.name,
+                                           info: info)
+                    } catch {
+                        lastError = error
+                    }
+                }
+            } catch {
+                lastError = error
+            }
+        }
+
+        throw lastError ?? BLEError.writeFailed(nil)
+    }
+
+    func powerOff(hostMAC: String, cachedIdentifier: String?, payloadHex: String?) throws -> WakeOutcome {
+        let payloads = Self.buildPayloads(hostMAC: hostMAC, payloadHex: payloadHex, command: Self.powerOffCommand)
+        var lastError: Error?
+
+        for attempt in 0..<2 {
+            if attempt > 0 { Thread.sleep(forTimeInterval: 1.2) }
+            do {
+                let (peripheral, name) = try resolvePeripheral(cachedIdentifier: cachedIdentifier, scanTimeout: 8)
+                try connect(peripheral, timeout: 12)
+                defer { manager.cancelPeripheralConnection(peripheral) }
+
+                try discoverAllCharacteristics(peripheral, timeout: 12)
+                let info = speakerInfo(on: peripheral)
+
+                guard let powerCharacteristic = characteristic(on: peripheral, matchingAny: Self.powerCharacteristicUUIDs) else {
+                    throw BLEError.characteristicsUnavailable(nil)
+                }
+
+                for payload in payloads {
+                    do {
+                        try write(payload.data, to: powerCharacteristic, on: peripheral, timeout: 8)
+                        return WakeOutcome(characteristicUUID: powerCharacteristic.uuid,
+                                           payload: payload.data,
+                                           battery: nil,
+                                           alreadyOn: false,
+                                           peripheralIdentifier: peripheral.identifier,
+                                           name: name ?? peripheral.name,
+                                           info: info)
                     } catch {
                         lastError = error
                     }
@@ -208,7 +262,8 @@ final class BLEReceiver: NSObject {
         try discoverAllCharacteristics(peripheral, timeout: 12)
         return BatteryOutcome(level: batteryValue(on: peripheral),
                               peripheralIdentifier: peripheral.identifier,
-                              name: name ?? peripheral.name)
+                              name: name ?? peripheral.name,
+                              info: speakerInfo(on: peripheral))
     }
 
     // MARK: - Internals
@@ -267,14 +322,19 @@ final class BLEReceiver: NSObject {
     }
 
     private func resolvePeripheral(cachedIdentifier: String?, scanTimeout: TimeInterval) throws -> (CBPeripheral, String?) {
+        // Prefer the cached identifier first: it works even when the speaker is
+        // powered on and therefore not advertising in BLE standby.
+        if let cachedIdentifier, let identifier = UUID(uuidString: cachedIdentifier) {
+            ensureCentral()
+            if let peripheral = manager.retrievePeripherals(withIdentifiers: [identifier]).first {
+                return (peripheral, peripheral.name)
+            }
+        }
+
         let found = try scan(timeout: scanTimeout)
         if let target = selectTarget(found, cachedIdentifier: cachedIdentifier),
            let peripheral = peripheral(for: target.identifier) {
             return (peripheral, target.name)
-        }
-        if let cachedIdentifier, let identifier = UUID(uuidString: cachedIdentifier),
-           let peripheral = manager.retrievePeripherals(withIdentifiers: [identifier]).first {
-            return (peripheral, peripheral.name)
         }
         throw BLEError.speakerNotFound
     }
@@ -361,6 +421,22 @@ final class BLEReceiver: NSObject {
             return nil
         }
         return Int(first)
+    }
+
+    private func speakerInfo(on peripheral: CBPeripheral) -> SpeakerInfo {
+        let name = stringValue(of: Self.deviceNameCharacteristicUUID, on: peripheral)
+        let model = stringValue(of: Self.modelNumberCharacteristicUUID, on: peripheral)
+        return SpeakerInfo(deviceName: name, model: model)
+    }
+
+    private func stringValue(of uuid: CBUUID, on peripheral: CBPeripheral) -> String? {
+        guard let characteristic = characteristic(on: peripheral, matchingAny: [uuid]),
+              let data = try? read(characteristic, on: peripheral, timeout: 6),
+              let text = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+        let trimmed = text.trimmingCharacters(in: CharacterSet(charactersIn: "\0").union(.whitespacesAndNewlines))
+        return trimmed.isEmpty ? nil : trimmed
     }
 
     private func write(_ data: Data, to characteristic: CBCharacteristic, on peripheral: CBPeripheral, timeout: TimeInterval) throws {

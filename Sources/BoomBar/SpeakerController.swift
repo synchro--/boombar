@@ -73,8 +73,11 @@ final class SpeakerController {
             if let identifier = outcome.peripheralIdentifier {
                 self.config.peripheralIdentifier = identifier.uuidString
             }
-            if let name = outcome.name, !name.isEmpty {
+            if let name = outcome.info.deviceName ?? outcome.name, !name.isEmpty {
                 self.config.speakerName = name
+            }
+            if let model = outcome.info.model {
+                self.config.speakerModel = model
             }
             if outcome.alreadyOn {
                 return "Speaker already on"
@@ -93,9 +96,36 @@ final class SpeakerController {
     func turnOff(completion: ((Result<String, Error>) -> Void)? = nil) {
         run(message: "Turning off\u{2026}", completion: completion) {
             guard let mac = self.resolveSpeakerMAC() else { throw SpeakerError.speakerUnavailable }
+            if let hostMAC = self.config.hostMAC ?? ClassicBluetooth.hostMAC() {
+                self.config.hostMAC = hostMAC
+                do {
+                    let outcome = try self.ble.powerOff(
+                        hostMAC: hostMAC,
+                        cachedIdentifier: self.config.peripheralIdentifier,
+                        payloadHex: self.config.payloadHex
+                    )
+                    if let identifier = outcome.peripheralIdentifier {
+                        self.config.peripheralIdentifier = identifier.uuidString
+                    }
+                    if self.waitUntilDisconnected(mac: mac, timeout: 8) {
+                        return "Speaker turned off"
+                    }
+                } catch {
+                    // fall back to classic RFCOMM
+                }
+            }
             try ClassicBluetooth.powerOff(mac: mac)
             return "Speaker turned off"
         }
+    }
+
+    private func waitUntilDisconnected(mac: String, timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        repeat {
+            if !ClassicBluetooth.isConnected(mac: mac) { return true }
+            Thread.sleep(forTimeInterval: 0.5)
+        } while Date() < deadline
+        return !ClassicBluetooth.isConnected(mac: mac)
     }
 
     func connectAudio(completion: ((Result<String, Error>) -> Void)? = nil) {
@@ -124,8 +154,11 @@ final class SpeakerController {
                 if let identifier = outcome.peripheralIdentifier {
                     self.config.peripheralIdentifier = identifier.uuidString
                 }
-                if let name = outcome.name, !name.isEmpty {
+                if let name = outcome.info.deviceName ?? outcome.name, !name.isEmpty {
                     self.config.speakerName = name
+                }
+                if let model = outcome.info.model {
+                    self.config.speakerModel = model
                 }
                 level = outcome.level
             } catch let caught {

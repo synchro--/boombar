@@ -5,6 +5,7 @@ final class Config {
         static let hostMAC = "hostMAC"
         static let speakerMAC = "speakerMAC"
         static let speakerName = "speakerName"
+        static let speakerModel = "speakerModel"
         static let peripheralIdentifier = "peripheralIdentifier"
         static let payloadHex = "payloadHex"
         static let setAsDefaultOutput = "setAsDefaultOutput"
@@ -30,6 +31,11 @@ final class Config {
     var speakerName: String? {
         get { defaults.string(forKey: prefix + Key.speakerName) }
         set { store(newValue, forKey: Key.speakerName) }
+    }
+
+    var speakerModel: String? {
+        get { defaults.string(forKey: prefix + Key.speakerModel) }
+        set { store(newValue, forKey: Key.speakerModel) }
     }
 
     var peripheralIdentifier: String? {
