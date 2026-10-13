@@ -155,7 +155,9 @@ it, re-enable it in System Settings → Privacy & Security → Bluetooth.
   workaround for the speaker's AVRCP volume desync (volume keys stop affecting
   it, except mute-at-zero; happens with stock Bluetooth too, not caused by the
   app). Playback pauses during the re-link; press play to resume.
-- **Battery: `n%`** — click to refresh over BLE.
+- **Battery: `n%`** — click to refresh over BLE. During playback this
+  auto-heals the AVRCP desync it causes (see Re-sync Volume); playback pauses,
+  press play to resume.
 - **Auto-set as Default Output** (checkmark, below the separator) — sticky
   preference, not an action: when on, Turn On / Connect Audio also route the
   default output to the speaker via `SwitchAudioSource`.

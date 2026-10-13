@@ -153,6 +153,7 @@ final class SpeakerController {
         isBusy = true
         statusText = "Reading battery\u{2026}"
         notify()
+        let wasConnected = isConnected
 
         workQueue.async { [weak self] in
             guard let self else { return }
@@ -185,6 +186,11 @@ final class SpeakerController {
                     self.statusText = "Battery unavailable"
                 }
                 self.notify()
+                // BLE GATT traffic during playback knocks AVRCP volume out of
+                // sync: heal it right away instead of leaving it broken.
+                if error == nil, level != nil, wasConnected {
+                    self.resyncVolume()
+                }
             }
         }
     }
