@@ -6,3 +6,4 @@ dist/
 .swiftpm/
 Package.resolved
 Resources/AppIcon.iconset/
+AGENTS.md

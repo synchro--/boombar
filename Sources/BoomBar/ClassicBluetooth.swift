@@ -177,6 +177,14 @@ enum ClassicBluetooth {
 
     @discardableResult
     static func connectAudio(mac: String, name: String?, setOutput: Bool) -> AudioConnectResult {
+        if isConnected(mac: mac) {
+            var outputSwitched = false
+            if setOutput, let name {
+                outputSwitched = switchOutput(to: name)
+            }
+            return AudioConnectResult(connected: true, stable: true, method: "already", outputSwitched: outputSwitched)
+        }
+
         Thread.sleep(forTimeInterval: 2.5)
 
         var method: String?
@@ -230,6 +238,44 @@ enum ClassicBluetooth {
         guard let path = which("SwitchAudioSource") else { return false }
         return run(path, ["-s", name], timeout: 8) != nil
     }
+
+    // MARK: - Volume resync (MEGABOOM AVRCP desync workaround)
+
+    // The MEGABOOM 3 (and siblings) can drop out of sync with the host's
+    // AVRCP absolute volume: macOS keeps sending SetAbsoluteVolume but the
+    // speaker ignores it until the Bluetooth link is re-established. This
+    // recreates the link, which provably re-syncs the volume.
+    @discardableResult
+    static func resyncVolume(mac: String, name: String?) -> Bool {
+        _ = runBlueutil(["--disconnect", mac])
+        if !waitUntilDisconnected(mac: mac, timeout: 10) {
+            return false
+        }
+        guard blueutilConnect(mac: mac) else { return false }
+        guard waitUntilStable(mac: mac) else { return false }
+        if let name {
+            switchOutput(to: name)
+        }
+        return true
+    }
+
+    private static func waitUntilStable(mac: String) -> Bool {
+        for _ in 0..<4 {
+            Thread.sleep(forTimeInterval: 1.0)
+            if !isConnected(mac: mac) { return false }
+        }
+        return true
+    }
+
+    static func waitUntilDisconnected(mac: String, timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        repeat {
+            if !isConnected(mac: mac) { return true }
+            Thread.sleep(forTimeInterval: 0.5)
+        } while Date() < deadline
+        return !isConnected(mac: mac)
+    }
+
 
     // MARK: - blueutil / process helpers
 

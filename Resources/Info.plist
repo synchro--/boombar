@@ -26,6 +26,8 @@
 	<string>13.0</string>
 	<key>LSUIElement</key>
 	<true/>
+	<key>LSMultipleInstancesProhibited</key>
+	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Boom Bar uses Bluetooth to turn your Ultimate Ears speaker on and off and to read its battery level.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>

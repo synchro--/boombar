@@ -1,8 +1,22 @@
 # BoomBar
 
+[![CI](https://github.com/synchro--/boombar/actions/workflows/ci.yml/badge.svg)](https://github.com/synchro--/boombar/actions/workflows/ci.yml)
+
 Turn Ultimate Ears BOOM-family speakers on and off from the macOS menu bar, and
 read their battery level. A native Swift port of
 [`ue-megaboom`](../ue-megaboom).
+
+## Intentions
+
+- **Do:** remote power on/off and battery level from the menu bar — the part
+  neither macOS nor UE ever gave Mac users.
+- **Don't:** manage your volume. Volume stays native; the app never sits in the
+  audio path.
+- **Workaround, not a feature:** `Re-sync Volume` exists only because the
+  speaker's firmware drops AVRCP volume sync on its own (stock Bluetooth too).
+  It re-establishes the link; that's all.
+- **Distribution:** ad-hoc signed, not notarized (no paid Apple Developer
+  account). Install friction is documented below, not hidden.
 
 The official UE | BOOM app can power your speaker on remotely, but it only runs
 on iOS and Android. This is a small macOS client that speaks the same
@@ -46,9 +60,10 @@ Activation enabled (the default).
 | BLAST / MEGABLAST | Separate app/ecosystem | Not supported |
 
 Only the MEGABOOM 3 has been hardware-verified. If your model isn't listed (or
-doesn't work), please open a **model report** issue with the output of
-`swift run` → Scan, plus the advertised service UUIDs and whether each action
-works.
+doesn't work), please open a **model report** issue with the speaker model and
+whether each action (Turn On / Turn Off / Battery / Connect Audio) works.
+There is no Scan menu item; the app finds the speaker automatically from the
+macOS paired-device list.
 
 ## Install
 
@@ -136,12 +151,19 @@ it, re-enable it in System Settings → Privacy & Security → Bluetooth.
 - **Connected: `<name>`** / **Off / standby** — current state.
 - **Turn On / Turn Off** — switches with the connection state.
 - **Connect Audio** — reconnects the classic audio profile.
+- **Re-sync Volume** — drops and re-establishes the classic link as a one-click
+  workaround for the speaker's AVRCP volume desync (volume keys stop affecting
+  it, except mute-at-zero; happens with stock Bluetooth too, not caused by the
+  app).
 - **Battery: `n%`** — click to refresh over BLE.
-- **Set as Default Output** — best-effort switch via `SwitchAudioSource`.
+- **Auto-set as Default Output** (checkmark, below the separator) — sticky
+  preference, not an action: when on, Turn On / Connect Audio also route the
+  default output to the speaker via `SwitchAudioSource`.
+- **BoomBar `<version>`** — version footer.
 - **Quit**.
 
-State is refreshed every 15 seconds and after every action. All Bluetooth work
-runs off the main thread.
+State is refreshed after every action; battery re-reads every 5 minutes. All
+Bluetooth work runs off the main thread.
 
 ## Configuration
 
