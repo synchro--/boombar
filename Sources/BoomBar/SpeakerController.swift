@@ -140,7 +140,7 @@ final class SpeakerController {
     }
 
     func resyncVolume(completion: ((Result<String, Error>) -> Void)? = nil) {
-        run(message: "Re-syncing volume\u{2026}", completion: completion) {
+        run(message: "Re-syncing volume\u{2026}", holdResult: 8, completion: completion) {
             guard let mac = self.resolveSpeakerMAC() else { throw SpeakerError.speakerUnavailable }
             let ok = ClassicBluetooth.resyncVolume(mac: mac, name: self.config.speakerName)
             guard ok else { throw SpeakerError.audioConnectionFailed }
@@ -198,6 +198,7 @@ final class SpeakerController {
     // MARK: - Internals
 
     private func run(message: String,
+                     holdResult: TimeInterval = 0,
                      completion: ((Result<String, Error>) -> Void)?,
                      task: @escaping () throws -> String) {
         guard !isBusy else { return }
@@ -224,7 +225,13 @@ final class SpeakerController {
                 }
                 self.notify()
                 completion?(result)
-                self.refresh()
+                if holdResult > 0 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + holdResult) { [weak self] in
+                        self?.refresh()
+                    }
+                } else {
+                    self.refresh()
+                }
             }
         }
     }
