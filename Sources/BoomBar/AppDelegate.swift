@@ -33,7 +33,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         controller.refresh()
         controller.readBattery()
         batteryTimer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
-            self?.controller.readBattery()
+            guard let self, !self.controller.isConnected else { return }
+            self.controller.readBattery()
         }
     }
 

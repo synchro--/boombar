@@ -162,8 +162,10 @@ it, re-enable it in System Settings → Privacy & Security → Bluetooth.
 - **BoomBar `<version>`** — version footer.
 - **Quit**.
 
-State is refreshed after every action; battery re-reads every 5 minutes. All
-Bluetooth work runs off the main thread.
+State is refreshed after every action; battery auto re-reads every 5 minutes
+while the speaker is off / standby (paused during playback — the BLE poll shares
+the radio with audio and can knock AVRCP volume out of sync; click Battery to
+refresh manually any time). All Bluetooth work runs off the main thread.
 
 ## Configuration
 
