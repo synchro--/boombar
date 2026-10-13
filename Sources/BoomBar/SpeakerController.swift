@@ -144,7 +144,7 @@ final class SpeakerController {
             guard let mac = self.resolveSpeakerMAC() else { throw SpeakerError.speakerUnavailable }
             let ok = ClassicBluetooth.resyncVolume(mac: mac, name: self.config.speakerName)
             guard ok else { throw SpeakerError.audioConnectionFailed }
-            return "Volume re-synced"
+            return "Volume re-synced (press play to resume)"
         }
     }
 
