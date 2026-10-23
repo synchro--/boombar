@@ -1,10 +1,12 @@
 # BoomBar
 
 [![CI](https://github.com/synchro--/boombar/actions/workflows/ci.yml/badge.svg)](https://github.com/synchro--/boombar/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/synchro--/boombar?label=release)](https://github.com/synchro--/boombar/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/synchro--/boombar/blob/main/LICENSE)
 
 Turn Ultimate Ears BOOM-family speakers on and off from the macOS menu bar, and
-read their battery level. A native Swift port of
-[`ue-megaboom`](../ue-megaboom).
+read their battery level. A native Swift implementation of the reverse-engineered
+protocol, ported from a hardware-verified Python reference.
 
 ## Intentions
 
@@ -23,10 +25,11 @@ on iOS and Android. This is a small macOS client that speaks the same
 reverse-engineered Bluetooth protocol. It targets the whole BOOM family — BOOM,
 MEGABOOM, HYPERBOOM, EPICBOOM and EVERBOOM.
 
-> **Install:** [`install.sh`](#option-a--installer-script-no-warning) ·
-> [Homebrew](#option-b--homebrew) (`brew tap synchro--/boombar`) ·
-> [DMG](#option-c--dmg-manual). The build is ad-hoc signed and not notarized, so
-> see the install section for the one-time Gatekeeper step.
+> **Install:** [installer script](https://raw.githubusercontent.com/synchro--/boombar/main/install.sh) ·
+> [Homebrew](#option-b--homebrew) ·
+> [DMG](https://github.com/synchro--/boombar/releases/latest/download/BoomBar.dmg).
+> The build is ad-hoc signed and not notarized, so see the
+> [install section](#install) for the one-time Gatekeeper step.
 
 ## How it works
 
@@ -60,8 +63,10 @@ Activation enabled (the default).
 | BLAST / MEGABLAST | Separate app/ecosystem | Not supported |
 
 Only the MEGABOOM 3 has been hardware-verified. If your model isn't listed (or
-doesn't work), please open a **model report** issue with the speaker model and
-whether each action (Turn On / Turn Off / Battery / Connect Audio) works.
+doesn't work), please
+[open a model report issue](https://github.com/synchro--/boombar/issues/new?template=model-report.md)
+with the speaker model and whether each action (Turn On / Turn Off / Battery /
+Connect Audio) works.
 There is no Scan menu item; the app finds the speaker automatically from the
 macOS paired-device list.
 
@@ -81,6 +86,9 @@ curl -fsSL https://raw.githubusercontent.com/synchro--/boombar/main/install.sh |
 
 ### Option B — Homebrew
 
+The cask lives in the
+[synchro--/homebrew-boombar](https://github.com/synchro--/homebrew-boombar) tap:
+
 ```bash
 brew tap synchro--/boombar
 brew trust synchro--/boombar   # required for third-party taps
@@ -88,12 +96,13 @@ brew install --cask boombar
 ```
 
 Homebrew quarantines the download, so the first launch is still blocked — use
-the same **Open Anyway** / `xattr` step below.
+the same [**Open Anyway** / `xattr` step below](#option-c--dmg-manual).
 
 ### Option C — DMG (manual)
 
-1. Download the latest `BoomBar-<version>.dmg` from
-   [Releases](https://github.com/synchro--/boombar/releases/latest).
+1. Download the [latest DMG](https://github.com/synchro--/boombar/releases/latest/download/BoomBar.dmg)
+   (or pick a version from
+   [Releases](https://github.com/synchro--/boombar/releases/latest)).
 2. Open the DMG and drag **Boom Bar** into **Applications**.
 3. Because it wasn't notarized, the first launch is blocked. On **macOS 15 and
    later, Control-click → Open no longer works**. Instead:
@@ -111,8 +120,9 @@ the menu bar, not in the Dock.
 
 > Notarization would remove this step entirely. It requires a paid Apple
 > Developer Program membership; the signing/notarization pipeline is documented
-> in [docs/DISTRIBUTION.md](docs/DISTRIBUTION.md) and can be enabled later by
-> setting `CODESIGN_IDENTITY` plus `notarytool` credentials.
+> in [docs/DISTRIBUTION.md](https://github.com/synchro--/boombar/blob/main/docs/DISTRIBUTION.md)
+> and can be enabled later by setting `CODESIGN_IDENTITY` plus `notarytool`
+> credentials.
 
 ## Requirements
 
@@ -121,7 +131,7 @@ the menu bar, not in the Dock.
 - The speaker must be paired with this Mac
 - Optional: [`blueutil`](https://github.com/toy/blueutil) (`brew install blueutil`)
   for reliable audio reconnection
-- Optional: [`SwitchAudioSource`](https://github.com/ruddfawcett/switchaudio-osx)
+- Optional: [`SwitchAudioSource`](https://github.com/deweller/switchaudio-osx)
   (`brew install switchaudio-osx`) to switch the default audio output
 
 ## Build and run
@@ -197,4 +207,10 @@ the `BoomBar.` prefix:
 
 This uses reverse-engineered behaviour, not an official Ultimate Ears API.
 Behaviour may vary by speaker generation and firmware. See
-[docs/DISTRIBUTION.md](docs/DISTRIBUTION.md) for packaging and distribution.
+[docs/DISTRIBUTION.md](https://github.com/synchro--/boombar/blob/main/docs/DISTRIBUTION.md)
+for packaging and distribution.
+
+## License
+
+[MIT](https://github.com/synchro--/boombar/blob/main/LICENSE) © 2026 BoomBar
+contributors.
